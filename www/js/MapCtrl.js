@@ -14,7 +14,7 @@ angular.module('starter').controller('MapCtrl', ['$scope', '$state', '$cordovaGe
         $cordovaGeolocation.getCurrentPosition(options).then(function (position) {
 
             var latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-            $scope.user.latLng = latLng;
+            $scope.latLng = latLng;
 
             var mapOptions = {
                 center: latLng,
@@ -28,7 +28,7 @@ angular.module('starter').controller('MapCtrl', ['$scope', '$state', '$cordovaGe
                 var marker = new google.maps.Marker({
                     map: $scope.map,
                     animation: google.maps.Animation.DROP,
-                    position: latLng,
+                    position: $scope.latLng,
                     icon: new google.maps.MarkerImage("http://maps.google.com/mapfiles/ms/icons/" + "blue.png")
                 });
 
@@ -58,14 +58,14 @@ angular.module('starter').controller('MapCtrl', ['$scope', '$state', '$cordovaGe
             $scope.loginModal.hide();
             if ($scope.user.userName) {
                 $scope.user.loc = [];
-                $scope.user.loc.push($scope.user.latLng.lng());
-                $scope.user.loc.push($scope.user.latLng.lat());
+                $scope.user.loc.push($scope.latLng.lng());
+                $scope.user.loc.push($scope.latLng.lat());
 
                 FriendFactory.registerUser($scope.user, function (response) {
                     console.log(response.data);
                     $scope.friends = [];
                     response.data.forEach(function (friend) {
-                        addFriend(friend);
+                        $scope.addFriend(friend);
                     });
                 });
             } else {
@@ -78,13 +78,13 @@ angular.module('starter').controller('MapCtrl', ['$scope', '$state', '$cordovaGe
         };
 
 
-        function addFriend(friend) {
+        $scope.addFriend = function (friend) {
             $scope.friends.push(friend);
-            //google.maps.event.addListenerOnce($scope.map, 'idle', function () {
-                var latLng = {
-                    lat: friend.loc[0],
-                    lng: friend.loc[1]
-                };
+            google.maps.event.addListenerOnce($scope.map, 'idle', function () {
+                var latLng = new google.maps.LatLng({
+                    lat: friend.loc[1],
+                    lng: friend.loc[0]
+                });
                 var marker = new google.maps.Marker({
                     map: $scope.map,
                     animation: google.maps.Animation.DROP,
@@ -99,7 +99,7 @@ angular.module('starter').controller('MapCtrl', ['$scope', '$state', '$cordovaGe
                 google.maps.event.addListener(marker, 'click', function () {
                     infoWindow.open($scope.map, marker);
                 });
-            //});
+            });
         }
     }]);
 
