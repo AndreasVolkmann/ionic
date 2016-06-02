@@ -1,5 +1,5 @@
 angular.module('starter').factory('FriendFactory', ['$http', function ($http) {
-    var url = 'http://ionicbackend-plaul.rhcloud.com/api/friends/register/';
+    var url = 'http://localhost:3000/api/friends/register/';
     return {
         registerUser: function (user, callback) {
             var data = {
